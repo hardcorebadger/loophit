@@ -12,6 +12,7 @@ public class Level : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		zoom = transform.localScale.x;
+		SetZoom (zoom);
 	}
 	
 	// Update is called once per frame
@@ -54,5 +55,8 @@ public class Level : MonoBehaviour {
 	private void SetZoom(float f) {
 		zoom = f;
 		transform.localScale = new Vector3 (zoom, zoom, zoom);
+		foreach (GameObject g in arcs) {
+			g.GetComponent<LineRenderer> ().widthCurve = AnimationCurve.Linear (0, f, 1, f);
+		}
 	}
 }
