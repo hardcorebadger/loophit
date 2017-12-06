@@ -50,6 +50,7 @@ public class Level : MonoBehaviour {
 				yield return null;
 			}
 		}
+		SetZoom (to);
 	}
 
 	private void SetZoom(float f) {
