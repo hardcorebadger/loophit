@@ -48,7 +48,7 @@ public class Level : MonoBehaviour {
 			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSize(difficulty, increment));
 		}
 
-		speed = 90 + difficulty*5f;
+		speed = 180 + difficulty*5f;
 		SetZoom (GetAppropriateZoom ());
 		return this;
 	}
@@ -107,15 +107,22 @@ public class Level : MonoBehaviour {
 		if (to > from) {
 			while (zoom < to) {
 				SetZoom(zoom+ Time.deltaTime * zoomSpeed);
-				yield return null;
+				if (zoom > to) {
+					SetZoom (((int)Mathf.Round (to * 10.0f)) / 10f);
+				} else {
+					yield return null;
+				}
 			}
 		} else {
 			while (zoom > to) {
 				SetZoom(zoom- Time.deltaTime * zoomSpeed);
-				yield return null;
+				if (zoom < to) {
+					SetZoom (((int)Mathf.Round (to * 10.0f)) / 10f);
+				} else {
+					yield return null;
+				}
 			}
 		}
-		SetZoom (((int)Mathf.Round(to * 10.0f)) / 10f);
 	}
 
 	private void SetZoom(float f) {
