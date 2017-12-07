@@ -57,7 +57,8 @@ public class Level : MonoBehaviour {
 		int stage = Mathf.Min(GameController.instance.maxArcs, ((diff / (GameController.instance.stageLength+1)) + 1));
 		int cappedDiff = Mathf.Min (diff, GameController.instance.maxArcs * GameController.instance.stageLength);
 		int localDiff = cappedDiff - ((stage-1) * GameController.instance.stageLength);
-		return Mathf.Max(15, ((int)(max - ((localDiff +1) * (0.05f*stage))*max)));
+		float percent = ((float)localDiff) / ((float)GameController.instance.maxArcs);
+		return Mathf.Max(15, (int)(max - (percent*max)));
 	}
 
 	private void EndLevel() {
@@ -69,6 +70,8 @@ public class Level : MonoBehaviour {
 		this.zoomLevel--;
 		float f = GetAppropriateZoom ();
 		StartCoroutine(Zoom (zoom, f));
+		if (zoomLevel == 1)
+			GameController.SetPointerSpeed (speed * -1);
 		if (nextLevel == null) {
 			if (zoomLevel == 3) {
 				nextLevel = GameController.NextLevel ();

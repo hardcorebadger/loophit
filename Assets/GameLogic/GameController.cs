@@ -52,13 +52,17 @@ public class GameController : MonoBehaviour {
 
 	public static void AddPoint() {
 		GameController.score++;
-		instance.scoreLabel.text =  "Score: " + GameController.score;
+		instance.scoreLabel.text =  "" + GameController.score;
 
+	}
+
+	public static void SetPointerSpeed(float f) {
+		instance.pointer.speed = f;
 	}
 
 	void GenerateStart() {
 
-		instance.scoreLabel.text =  "Score: " + GameController.score;
+		instance.scoreLabel.text =  "" + GameController.score;
 		Level a = Instantiate(instance.plugLevel)
 			.Create(1, 1)
 			.Generate(instance.levelMaterials[1 % instance.levelMaterials.Length]);
