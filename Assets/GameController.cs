@@ -7,8 +7,11 @@ public class GameController : MonoBehaviour {
 
 	public Pointer pointer;
 	public GameObject gameOverPopup;
-	public GameObject plugLevel;
+	public Level plugLevel;
 	public int difficulty = 1;
+	public Material[] levelMaterials;
+	public int stageLength = 5;
+	public int maxArcs = 6;
 	public static int spawnedLevels = 4;
 	public static GameController instance;
 
@@ -25,8 +28,8 @@ public class GameController : MonoBehaviour {
 		if (OnTap ()) {
 			if (!gameOver) {
 				if (!pointer.HitLoop ()) {
-					gameOver = true;
-					gameOverPopup.SetActive (true);
+//					gameOver = true;
+//					gameOverPopup.SetActive (true);
 				}
 			} else {
 				SceneManager.LoadScene("main", LoadSceneMode.Single);
@@ -34,9 +37,12 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public static GameObject NextLevel() {
+	public static Level NextLevel() {
 		instance.difficulty++;
-		return Instantiate(instance.plugLevel);
+		return Instantiate(instance.plugLevel).Generate(
+			instance.difficulty,
+			instance.levelMaterials[(instance.difficulty) % instance.levelMaterials.Length]
+		);
 	}
 
 	public static bool OnTap() {
