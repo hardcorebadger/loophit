@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4883901273333166}
-  - component: {fileID: 114858194003864424}
   - component: {fileID: 114040764233177628}
   m_Layer: 0
   m_Name: levelPrefab
@@ -57,15 +56,6 @@ MonoBehaviour:
   nextLevel: {fileID: 0}
   zoom: 0.1
   zoomSpeed: 1
---- !u!114 &114858194003864424
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1846626338199160}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 114e6fadee19d46108424c469efbc7c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 320
+  zoomLevel: 0
+  difficulty: 0
+  speed: 0

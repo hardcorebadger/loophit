@@ -9,6 +9,8 @@ public class Level : MonoBehaviour {
 	public Level nextLevel;
 	public float zoom;
 	public float zoomSpeed;
+	public int zoomLevel, difficulty;
+	public float speed;
 
 	// Use this for initialization
 	void Start () {
@@ -25,10 +27,17 @@ public class Level : MonoBehaviour {
 		if (!f && nextLevel != null) {
 			EndLevel ();
 		}
+		transform.Rotate (new Vector3 (0, 0, speed * Time.deltaTime));
+
 	}
 
-	public Level Generate(int difficulty, Material mat) {
+	public Level Create(int zoom, int difficulty) {
+		this.zoomLevel = zoom;
+		this.difficulty = difficulty;
+		return this;
+	}
 
+	public Level Generate(Material mat) {
 		int arcAmount = Mathf.Min(GameController.instance.maxArcs, ((difficulty / (GameController.instance.stageLength+1)) + 1));
 		int increment = 360 / arcAmount;
 		arcs = new GameObject[arcAmount];
@@ -39,8 +48,8 @@ public class Level : MonoBehaviour {
 			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSize(difficulty, increment));
 		}
 
-		GetComponent<Test> ().speed = 90 + difficulty*5f;
-		SetZoom (zoom);
+		speed = 90 + difficulty*5f;
+		SetZoom (GetAppropriateZoom ());
 		return this;
 	}
 
@@ -48,24 +57,47 @@ public class Level : MonoBehaviour {
 		int stage = Mathf.Min(GameController.instance.maxArcs, ((diff / (GameController.instance.stageLength+1)) + 1));
 		int cappedDiff = Mathf.Min (diff, GameController.instance.maxArcs * GameController.instance.stageLength);
 		int localDiff = cappedDiff - ((stage-1) * GameController.instance.stageLength);
-		return Mathf.Max(1, ((int)(max - ((localDiff +1) * (0.05f*stage))*max)));
+		return Mathf.Max(15, ((int)(max - ((localDiff +1) * (0.05f*stage))*max)));
 	}
 
 	private void EndLevel() {
-		nextLevel.ZoomTo (zoom, true);
+		nextLevel.Advance();
 		Destroy (gameObject);
 	}
 
-	private void ZoomTo(float f, bool canSpawn) {
+	private void Advance() {
+		this.zoomLevel--;
+		float f = GetAppropriateZoom ();
 		StartCoroutine(Zoom (zoom, f));
 		if (nextLevel == null) {
-			if (canSpawn) {
+			if (zoomLevel == 3) {
 				nextLevel = GameController.NextLevel ();
-				nextLevel.ZoomTo (zoom, false);
+				nextLevel.Advance ();
 			}
 		} else {
-			nextLevel.ZoomTo (zoom, true);
+			nextLevel.Advance (); 
 		}
+
+	}
+
+	private float GetAppropriateZoom() {
+		float f = 0.1f;
+		switch (zoomLevel) {
+		case 1:
+			f = 1;
+			break;
+		case 2:
+			f = 0.6f;
+			break;
+		case 3:
+			f = 0.3f;
+			break;
+		case 4: 
+			f = 0.1f;
+			break;
+
+		}
+		return f;
 	}
 
 	private IEnumerator Zoom(float from, float to) {
