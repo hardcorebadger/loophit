@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
 	public int stageLength = 5;
 	public int maxArcs = 6;
 	public Text scoreLabel;
+	public bool debugMode = false;
 
 	public static int score = 0;
 	public static int spawnedLevels = 4;
@@ -32,9 +33,11 @@ public class GameController : MonoBehaviour {
 	void Update () {
 		if (OnTap ()) {
 			if (!gameOver) {
-				if (!pointer.HitLoop ()) {
-//					gameOver = true;
-//					gameOverPopup.SetActive (true);
+				if (!pointer.HitLoop () && !debugMode) {
+					gameOver = true;
+					gameOverPopup.SetActive (true);
+					GameController.score = 0;
+					instance.scoreLabel.text =  "" + GameController.score;
 				}
 			} else {
 				SceneManager.LoadScene("main", LoadSceneMode.Single);
