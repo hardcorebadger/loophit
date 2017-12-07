@@ -2,103 +2,132 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Level
+ * 
+ * Each level object is responsible for 1 layer of the 
+ * vortex - it holds references to all of it's arcs
+ * and handles level completion, zooming, and new
+ * level spawning as required
+ * 
+ * Levels are linked in ascending order, with 4 levels
+ * being present at any given time ie
+ * 
+ * 1 -> 2 -> 3 -> 4 -> null
+ * 
+ * when level (1) is completed, it recursively calls
+ * next Level to advance, when next level is null (4)
+ * that level is responsible for creating a new level to 
+ * fill its place
+ * 
+ */
+
 public class Level : MonoBehaviour {
 
+	// settings and links
 	public GameObject arcPrefab;
 	public GameObject[] arcs;
-	public Level nextLevel;
-	public float zoom;
-	public float zoomSpeed;
-	public int zoomLevel;
 	public float speed;
+	public float zoomSpeed;
 
-	// Use this for initialization
+	// private members
+	private float currentZoom;
+	private int zoomLevel;
+	private Level nextLevel;
+
+	//
+	// Object Methods
+	//
+
 	void Start () {
-		SetZoom (zoom);
+		// initialize everthing to the right zoom
+		SetZoom (currentZoom);
 	}
-	
-	// Update is called once per frame
+		
 	void Update () {
+		// check if all the arcs are gone
 		bool f = false;
 		foreach (GameObject g in arcs) {
 			if (g.activeSelf)
 				f = true;
 		}
+		// if they are, the level is over
 		if (!f && nextLevel != null) {
 			EndLevel ();
 		}
+		// rotate the level at speed
 		transform.Rotate (new Vector3 (0, 0, speed * Time.deltaTime));
-
 	}
 
+	//
+	// Public Interface
+	//
+
+	// creates a level given the parameters
+	// essentially uses l to do a lerp of the stage start-end params
 	public Level Generate(Stage s, int l, Material mat, int zoom) {
-		zoomLevel = zoom;
+		// zome setup math
 		float lerpVal = (float)l / (float)s.levels;
 		int increment = 360 / s.arcs;
 		arcs = new GameObject[s.arcs];
+
+		// initialize the arcs
 		for (int i = 0; i < s.arcs; i++) {
+			// instantiate
 			arcs [i] = Instantiate (arcPrefab, transform);
+			// set material
 			arcs[i].GetComponent<LineRenderer> ().material = mat;
+			// set rotation
 			arcs [i].transform.eulerAngles = new Vector3 (0, 0, increment * i);
+			// set size
 			arcs [i].GetComponent<LoopArc> ().SetArc (0, Mathf.Lerp(s.startSize, s.endSize, lerpVal));
 		}
+		// set speed and zoom to appropriate values
 		speed = Mathf.Lerp (s.startSpeed, s.endSpeed, lerpVal);
+		zoomLevel = zoom;
+		// refresh zoom animated
 		SetZoom (GetAppropriateZoom ());
+		// randomize start rotation
+		transform.eulerAngles = new Vector3(0,0,Random.Range(0f,360f));
 		return this;
 	}
-//
-//	public Level CreateProcedural(int zoom, int difficulty) {
-//		this.zoomLevel = zoom;
-//		this.difficulty = difficulty;
-//		return this;
-//	}
-//
-//	public Level GenerateProcedural(Material mat) {
-//		int arcAmount = Mathf.Min(GameController.instance.maxArcs, ((difficulty / (GameController.instance.stageLength+1)) + 1));
-//		int increment = 360 / arcAmount;
-//		arcs = new GameObject[arcAmount];
-//		for (int i = 0; i < arcAmount; i++) {
-//			arcs [i] = Instantiate (arcPrefab, transform);
-//			arcs[i].GetComponent<LineRenderer> ().material = mat;
-//			arcs [i].transform.eulerAngles = new Vector3 (0, 0, increment * i);
-//			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSizeProcedural(difficulty, increment));
-//		}
-//
-//		speed = 180 + difficulty*5f;
-//		SetZoom (GetAppropriateZoom ());
-//		return this;
-//	}
-//
-//	private int GetSizeProcedural(int diff, int max) {
-//		int stage = Mathf.Min(GameController.instance.maxArcs, ((diff / (GameController.instance.stageLength+1)) + 1));
-//		int cappedDiff = Mathf.Min (diff, GameController.instance.maxArcs * GameController.instance.stageLength);
-//		int localDiff = cappedDiff - ((stage-1) * GameController.instance.stageLength);
-//		float percent = ((float)localDiff) / ((float)GameController.instance.maxArcs);
-//		return Mathf.Max(15, (int)(max - (percent*max)));
-//	}
-//
+
+	//
+	// Helpers
+	//
+
+	// only called on top level when all arcs are gone
+	// ends the level and starts the Advance recursion
 	private void EndLevel() {
 		nextLevel.Advance();
 		Destroy (gameObject);
 	}
 
+	// Recursive function to advance (into the vortex)
 	public void Advance() {
+		// move the level up to next zoom level
 		this.zoomLevel--;
-		float f = GetAppropriateZoom ();
-		StartCoroutine(Zoom (zoom, f));
+		StartCoroutine(Zoom (currentZoom, GetAppropriateZoom ()));
+
+		// if this is the current level, set the pointer to match speed
 		if (zoomLevel == 1)
 			GameController.SetPointerSpeed (speed * -1);
 		if (nextLevel == null) {
 			if (zoomLevel == 3) {
+				// if we were the last level (4) we are now (3)
+				// so it's our turn to generate the next level behind us
 				nextLevel = GameController.NextLevel ();
 				nextLevel.Advance ();
 			}
 		} else {
+			// otherwise you are in the middle of the stack
+			// so nothing important for you to do except advance
 			nextLevel.Advance (); 
 		}
 
 	}
 
+	// just maps the zoom level to a transform scale value
 	private float GetAppropriateZoom() {
 		float f = 0.1f;
 		switch (zoomLevel) {
@@ -114,25 +143,27 @@ public class Level : MonoBehaviour {
 		case 4: 
 			f = 0.1f;
 			break;
-
 		}
 		return f;
 	}
 
+	// actual zoom animation function, takes a transform scale
+	// to and scale from and animates between them using zoomSpeed
+	// and a coroutine
 	private IEnumerator Zoom(float from, float to) {
 		if (to > from) {
-			while (zoom < to) {
-				SetZoom(zoom+ Time.deltaTime * zoomSpeed);
-				if (zoom > to) {
+			while (currentZoom < to) {
+				SetZoom(currentZoom+ Time.deltaTime * zoomSpeed);
+				if (currentZoom > to) {
 					SetZoom (((int)Mathf.Round (to * 10.0f)) / 10f);
 				} else {
 					yield return null;
 				}
 			}
 		} else {
-			while (zoom > to) {
-				SetZoom(zoom- Time.deltaTime * zoomSpeed);
-				if (zoom < to) {
+			while (currentZoom > to) {
+				SetZoom(currentZoom- Time.deltaTime * zoomSpeed);
+				if (currentZoom < to) {
 					SetZoom (((int)Mathf.Round (to * 10.0f)) / 10f);
 				} else {
 					yield return null;
@@ -141,9 +172,11 @@ public class Level : MonoBehaviour {
 		}
 	}
 
+	// base zoom function that animator uses
+	// does a hard set on all the values that need to zoom
 	private void SetZoom(float f) {
-		zoom = f;
-		transform.localScale = new Vector3 (zoom, zoom, zoom);
+		currentZoom = f;
+		transform.localScale = new Vector3 (currentZoom, currentZoom, currentZoom);
 		foreach (GameObject g in arcs) {
 			g.GetComponent<LineRenderer> ().widthCurve = AnimationCurve.Linear (0, f, 1, f);
 		}

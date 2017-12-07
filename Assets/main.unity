@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 388442466}
   - component: {fileID: 388442465}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,7 +274,7 @@ RectTransform:
   - {fileID: 1030267500}
   - {fileID: 388442464}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -341,7 +341,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1030267499
 GameObject:
@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 1030267502}
   - component: {fileID: 1030267501}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: GameOver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -423,7 +423,6 @@ GameObject:
   - component: {fileID: 1096227711}
   - component: {fileID: 1096227710}
   - component: {fileID: 1096227709}
-  - component: {fileID: 1096227713}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -491,61 +490,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1096227713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1096227708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f94c0381a51d4ce9947ce2e50f4d3d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pointer: {fileID: 1967385759}
-  gameOverPopup: {fileID: 1030267499}
-  plugLevel: {fileID: 114040764233177628, guid: 949b62a27891946938d80feb2200d308,
-    type: 2}
-  scoreLabel: {fileID: 388442465}
-  levelStages:
-  - levels: 5
-    arcs: 2
-    startSpeed: 180
-    endSpeed: 200
-    startSize: 120
-    endSize: 90
-  - levels: 5
-    arcs: 3
-    startSpeed: 200
-    endSpeed: 220
-    startSize: 50
-    endSize: 30
-  - levels: 2
-    arcs: 1
-    startSpeed: 300
-    endSpeed: 300
-    startSize: 50
-    endSize: 50
-  - levels: 5
-    arcs: 4
-    startSpeed: 200
-    endSpeed: 230
-    startSize: 40
-    endSize: 20
-  - levels: 5
-    arcs: 3
-    startSpeed: 250
-    endSpeed: 280
-    startSize: 30
-    endSize: 15
-  difficulty: 1
-  levelMaterials:
-  - {fileID: 2100000, guid: d0a4935e74d174a22821e2c27704a75e, type: 2}
-  - {fileID: 2100000, guid: 02ad16038c8ec4b5b8bb4081e99f3af6, type: 2}
-  - {fileID: 2100000, guid: 7d8208c316c9044c19d234f70989923f, type: 2}
-  debugMode: 1
 --- !u!1 &1374739989
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +566,87 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1374739989}
+--- !u!1 &1923638281
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1923638283}
+  - component: {fileID: 1923638282}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1923638282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1923638281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f94c0381a51d4ce9947ce2e50f4d3d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointer: {fileID: 1967385759}
+  gameOverPopup: {fileID: 1030267499}
+  plugLevel: {fileID: 114040764233177628, guid: 949b62a27891946938d80feb2200d308,
+    type: 2}
+  scoreLabel: {fileID: 388442465}
+  levelStages:
+  - levels: 5
+    arcs: 2
+    startSpeed: 180
+    endSpeed: 200
+    startSize: 120
+    endSize: 90
+  - levels: 5
+    arcs: 3
+    startSpeed: 200
+    endSpeed: 220
+    startSize: 50
+    endSize: 30
+  - levels: 2
+    arcs: 1
+    startSpeed: 300
+    endSpeed: 300
+    startSize: 50
+    endSize: 50
+  - levels: 5
+    arcs: 4
+    startSpeed: 200
+    endSpeed: 230
+    startSize: 40
+    endSize: 20
+  - levels: 5
+    arcs: 3
+    startSpeed: 250
+    endSpeed: 280
+    startSize: 30
+    endSize: 15
+  levelMaterials:
+  - {fileID: 2100000, guid: d0a4935e74d174a22821e2c27704a75e, type: 2}
+  - {fileID: 2100000, guid: 02ad16038c8ec4b5b8bb4081e99f3af6, type: 2}
+  - {fileID: 2100000, guid: 7d8208c316c9044c19d234f70989923f, type: 2}
+  debugMode: 0
+--- !u!4 &1923638283
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1923638281}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 538, y: 930, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967385756
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,7 +660,7 @@ GameObject:
   - component: {fileID: 1967385762}
   - component: {fileID: 1967385759}
   m_Layer: 0
-  m_Name: pointer-1
+  m_Name: Pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -670,7 +697,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578a8e03d2e614d5a9dfb333e9c99b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: -180
+  speed: 0
 --- !u!212 &1967385760
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -726,7 +753,7 @@ Transform:
   m_LocalScale: {x: 2.04, y: 2.04, z: 2.04}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!60 &1967385762
 PolygonCollider2D:
