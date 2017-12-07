@@ -36,10 +36,10 @@ public class GameController : MonoBehaviour {
 				if (!pointer.HitLoop () && !debugMode) {
 					gameOver = true;
 					gameOverPopup.SetActive (true);
-					GameController.score = 0;
-					instance.scoreLabel.text =  "" + GameController.score;
 				}
 			} else {
+				GameController.score = 0;
+				instance.scoreLabel.text =  "" + GameController.score;
 				SceneManager.LoadScene("main", LoadSceneMode.Single);
 			}
 		}
