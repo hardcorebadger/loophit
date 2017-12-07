@@ -55,7 +55,7 @@ MonoBehaviour:
   arcs: []
   nextLevel: {fileID: 0}
   zoom: 0.1
-  zoomSpeed: 1
+  zoomSpeed: 2
   zoomLevel: 0
   difficulty: 0
   speed: 0

@@ -9,16 +9,18 @@ public class GameController : MonoBehaviour {
 	public Pointer pointer;
 	public GameObject gameOverPopup;
 	public Level plugLevel;
+	public Text scoreLabel;
+
+	public Stage[] levelStages;
 	public int difficulty = 1;
 	public Material[] levelMaterials;
-	public int stageLength = 5;
-	public int maxArcs = 6;
-	public Text scoreLabel;
 	public bool debugMode = false;
 
 	public static int score = 0;
-	public static int spawnedLevels = 4;
 	public static GameController instance;
+	public static Queue<Stage> stages;
+	public static Stage currentStage;
+	public static int stageLevel = 0;
 
 	private bool gameOver = false;
 
@@ -26,7 +28,13 @@ public class GameController : MonoBehaviour {
 	void Start () {
 		instance = this;
 
+		stages = new Queue<Stage> ();
+		foreach (Stage s in levelStages) {
+			stages.Enqueue (s);
+		}
+		currentStage = stages.Dequeue ();
 		GenerateStart ();
+
 	}
 	
 	// Update is called once per frame
@@ -38,8 +46,6 @@ public class GameController : MonoBehaviour {
 					gameOverPopup.SetActive (true);
 				}
 			} else {
-				GameController.score = 0;
-				instance.scoreLabel.text =  "" + GameController.score;
 				SceneManager.LoadScene("main", LoadSceneMode.Single);
 			}
 		}
@@ -47,10 +53,24 @@ public class GameController : MonoBehaviour {
 
 	public static Level NextLevel() {
 		instance.difficulty++;
-		return Instantiate(instance.plugLevel)
-			.Create(5, instance.difficulty + spawnedLevels - 1)
-			.Generate(instance.levelMaterials[(instance.difficulty+spawnedLevels) % instance.levelMaterials.Length]);
+		IncrementStage ();
+		return Instantiate (instance.plugLevel).Generate (
+			currentStage, stageLevel, 
+			instance.levelMaterials [instance.difficulty % instance.levelMaterials.Length], 5
+		);
+	}
 
+	private static void IncrementStage() {
+		stageLevel++;
+		if (stageLevel > currentStage.levels) {
+			if (stages.Count > 0) {
+				currentStage = stages.Dequeue ();
+				stageLevel = 1;
+			} else {
+				// just stay on last level forever
+				stageLevel--;
+			}
+		}
 	}
 
 	public static void AddPoint() {
@@ -64,27 +84,23 @@ public class GameController : MonoBehaviour {
 	}
 
 	void GenerateStart() {
-
+		GameController.score = 0;
 		instance.scoreLabel.text =  "" + GameController.score;
-		Level a = Instantiate(instance.plugLevel)
-			.Create(1, 1)
-			.Generate(instance.levelMaterials[1 % instance.levelMaterials.Length]);
-		Level b = Instantiate(instance.plugLevel)
-			.Create(2, 2)
-			.Generate(instance.levelMaterials[2 % instance.levelMaterials.Length]);
-		Level c = Instantiate(instance.plugLevel)
-			.Create(3, 3)
-			.Generate(instance.levelMaterials[3 % instance.levelMaterials.Length]);
-		Level d = Instantiate(instance.plugLevel)
-			.Create(4, 4)
-			.Generate(instance.levelMaterials[4 % instance.levelMaterials.Length]);
-
-		a.nextLevel = b;
-		b.nextLevel = c;
-		c.nextLevel = d;
+		Level genesis = NextLevel ();
+		// load genesis, then 4 levels (autolinks)
+		genesis.Advance ();genesis.Advance ();genesis.Advance ();genesis.Advance ();
 	}
 
 	public static bool OnTap() {
 		return (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetKeyDown(KeyCode.Space);
 	}
+
+
+}
+
+[System.Serializable]
+public class Stage {
+	public int levels, arcs;
+	public float startSpeed, endSpeed;
+	public float startSize, endSize;
 }

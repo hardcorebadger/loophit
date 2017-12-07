@@ -9,7 +9,7 @@ public class Level : MonoBehaviour {
 	public Level nextLevel;
 	public float zoom;
 	public float zoomSpeed;
-	public int zoomLevel, difficulty;
+	public int zoomLevel;
 	public float speed;
 
 	// Use this for initialization
@@ -31,42 +31,58 @@ public class Level : MonoBehaviour {
 
 	}
 
-	public Level Create(int zoom, int difficulty) {
-		this.zoomLevel = zoom;
-		this.difficulty = difficulty;
-		return this;
-	}
-
-	public Level Generate(Material mat) {
-		int arcAmount = Mathf.Min(GameController.instance.maxArcs, ((difficulty / (GameController.instance.stageLength+1)) + 1));
-		int increment = 360 / arcAmount;
-		arcs = new GameObject[arcAmount];
-		for (int i = 0; i < arcAmount; i++) {
+	public Level Generate(Stage s, int l, Material mat, int zoom) {
+		zoomLevel = zoom;
+		float lerpVal = (float)l / (float)s.levels;
+		int increment = 360 / s.arcs;
+		arcs = new GameObject[s.arcs];
+		for (int i = 0; i < s.arcs; i++) {
 			arcs [i] = Instantiate (arcPrefab, transform);
 			arcs[i].GetComponent<LineRenderer> ().material = mat;
 			arcs [i].transform.eulerAngles = new Vector3 (0, 0, increment * i);
-			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSize(difficulty, increment));
+			arcs [i].GetComponent<LoopArc> ().SetArc (0, Mathf.Lerp(s.startSize, s.endSize, lerpVal));
 		}
-
-		speed = 180 + difficulty*5f;
+		speed = Mathf.Lerp (s.startSpeed, s.endSpeed, lerpVal);
 		SetZoom (GetAppropriateZoom ());
 		return this;
 	}
-
-	private int GetSize(int diff, int max) {
-		int stage = Mathf.Min(GameController.instance.maxArcs, ((diff / (GameController.instance.stageLength+1)) + 1));
-		int cappedDiff = Mathf.Min (diff, GameController.instance.maxArcs * GameController.instance.stageLength);
-		int localDiff = cappedDiff - ((stage-1) * GameController.instance.stageLength);
-		float percent = ((float)localDiff) / ((float)GameController.instance.maxArcs);
-		return Mathf.Max(15, (int)(max - (percent*max)));
-	}
-
+//
+//	public Level CreateProcedural(int zoom, int difficulty) {
+//		this.zoomLevel = zoom;
+//		this.difficulty = difficulty;
+//		return this;
+//	}
+//
+//	public Level GenerateProcedural(Material mat) {
+//		int arcAmount = Mathf.Min(GameController.instance.maxArcs, ((difficulty / (GameController.instance.stageLength+1)) + 1));
+//		int increment = 360 / arcAmount;
+//		arcs = new GameObject[arcAmount];
+//		for (int i = 0; i < arcAmount; i++) {
+//			arcs [i] = Instantiate (arcPrefab, transform);
+//			arcs[i].GetComponent<LineRenderer> ().material = mat;
+//			arcs [i].transform.eulerAngles = new Vector3 (0, 0, increment * i);
+//			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSizeProcedural(difficulty, increment));
+//		}
+//
+//		speed = 180 + difficulty*5f;
+//		SetZoom (GetAppropriateZoom ());
+//		return this;
+//	}
+//
+//	private int GetSizeProcedural(int diff, int max) {
+//		int stage = Mathf.Min(GameController.instance.maxArcs, ((diff / (GameController.instance.stageLength+1)) + 1));
+//		int cappedDiff = Mathf.Min (diff, GameController.instance.maxArcs * GameController.instance.stageLength);
+//		int localDiff = cappedDiff - ((stage-1) * GameController.instance.stageLength);
+//		float percent = ((float)localDiff) / ((float)GameController.instance.maxArcs);
+//		return Mathf.Max(15, (int)(max - (percent*max)));
+//	}
+//
 	private void EndLevel() {
 		nextLevel.Advance();
 		Destroy (gameObject);
 	}
 
-	private void Advance() {
+	public void Advance() {
 		this.zoomLevel--;
 		float f = GetAppropriateZoom ();
 		StartCoroutine(Zoom (zoom, f));
