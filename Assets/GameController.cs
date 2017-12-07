@@ -40,9 +40,13 @@ public class GameController : MonoBehaviour {
 	public static Level NextLevel() {
 		instance.difficulty++;
 		return Instantiate(instance.plugLevel).Generate(
-			instance.difficulty,
-			instance.levelMaterials[(instance.difficulty) % instance.levelMaterials.Length]
+			instance.difficulty+spawnedLevels,
+			instance.levelMaterials[(instance.difficulty+spawnedLevels) % instance.levelMaterials.Length]
 		);
+	}
+
+	public void GenerateFirstLevels() {
+
 	}
 
 	public static bool OnTap() {
