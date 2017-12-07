@@ -28,14 +28,20 @@ public class Level : MonoBehaviour {
 	}
 
 	private void EndLevel() {
-		nextLevel.ZoomTo (zoom);
+		nextLevel.ZoomTo (zoom, true);
 		Destroy (gameObject);
 	}
 
-	private void ZoomTo(float f) {
+	private void ZoomTo(float f, bool canSpawn) {
 		StartCoroutine(Zoom (zoom, f));
-		if (nextLevel != null)
-			nextLevel.ZoomTo (zoom);
+		if (nextLevel == null) {
+			if (canSpawn) {
+				nextLevel = GameController.NextLevel ().GetComponent<Level> ();
+				nextLevel.ZoomTo (zoom, false);
+			}
+		} else {
+			nextLevel.ZoomTo (zoom, true);
+		}
 	}
 
 	private IEnumerator Zoom(float from, float to) {
