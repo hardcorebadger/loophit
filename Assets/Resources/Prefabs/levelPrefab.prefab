@@ -53,12 +53,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arcPrefab: {fileID: 1006321732834036, guid: 2257df0f86e0745dda3b0246ffa65e7b, type: 2}
   arcs: []
-  nextLevel: {fileID: 0}
   arcSize: 0
   currentArcSize: 0
   zoom: 0.1
-  zoomSpeed: 1
-  shrinkSpeed: 20
-  zoomLevel: 0
-  difficulty: 0
+  zoomSpeed: 2
+  shrinkSpeed: 15
   speed: 0
