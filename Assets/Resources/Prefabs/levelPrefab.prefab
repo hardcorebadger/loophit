@@ -57,5 +57,5 @@ MonoBehaviour:
   currentArcSize: 0
   zoom: 0.1
   zoomSpeed: 2
-  shrinkSpeed: 15
+  shrinkSpeed: 200
   speed: 0
