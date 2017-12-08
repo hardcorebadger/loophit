@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour {
 	public int maxArcs = 6;
 	public Text scoreLabel;
 	public bool debugMode = false;
+	public Level currentLevel;
 
 	public static int score = 0;
 	public static int spawnedLevels = 4;
@@ -34,8 +35,7 @@ public class GameController : MonoBehaviour {
 		if (OnTap ()) {
 			if (!gameOver) {
 				if (!pointer.HitLoop () && !debugMode) {
-					gameOver = true;
-					gameOverPopup.SetActive (true);
+					currentLevel.Miss ();
 				}
 			} else {
 				GameController.score = 0;
@@ -87,4 +87,10 @@ public class GameController : MonoBehaviour {
 	public static bool OnTap() {
 		return (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetKeyDown(KeyCode.Space);
 	}
+
+	public static void EndGame() {
+		instance.gameOver = true;
+		instance.gameOverPopup.SetActive (true);
+	}
+
 }

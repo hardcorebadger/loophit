@@ -7,8 +7,11 @@ public class Level : MonoBehaviour {
 	public GameObject arcPrefab;
 	public GameObject[] arcs;
 	public Level nextLevel;
+	public int arcSize;
+	public float currentArcSize;
 	public float zoom;
 	public float zoomSpeed;
+	public float shrinkSpeed;
 	public int zoomLevel, difficulty;
 	public float speed;
 
@@ -27,6 +30,9 @@ public class Level : MonoBehaviour {
 		if (!f && nextLevel != null) {
 			EndLevel ();
 		}
+		if (this.zoomLevel == 1)
+			GameController.instance.currentLevel = this;
+		
 		transform.Rotate (new Vector3 (0, 0, speed * Time.deltaTime));
 
 	}
@@ -45,7 +51,9 @@ public class Level : MonoBehaviour {
 			arcs [i] = Instantiate (arcPrefab, transform);
 			arcs[i].GetComponent<LineRenderer> ().material = mat;
 			arcs [i].transform.eulerAngles = new Vector3 (0, 0, increment * i);
-			arcs [i].GetComponent<LoopArc> ().SetArc (0, GetSize(difficulty, increment));
+			arcSize = GetSize (difficulty, increment);
+			currentArcSize = arcSize;
+			arcs [i].GetComponent<LoopArc> ().SetArc (0, arcSize);
 		}
 
 		speed = 180 + difficulty*5f;
@@ -132,4 +140,43 @@ public class Level : MonoBehaviour {
 			g.GetComponent<LineRenderer> ().widthCurve = AnimationCurve.Linear (0, f, 1, f);
 		}
 	}
+
+	public void Miss() {
+		StartCoroutine (Shrink ());
+	}
+
+	private IEnumerator Shrink() {
+
+		if (currentArcSize > 10) {
+			float target = currentArcSize - 20;
+			if (target < 10)
+				target = 10;
+			
+			while (currentArcSize > target) {
+				SetArcSize (currentArcSize - Time.deltaTime * shrinkSpeed);
+				if (currentArcSize < target) {
+					SetArcSize (target);
+				} else {
+					yield return null;
+				}
+			}
+
+		} else {
+			GameController.EndGame ();
+			yield return null;
+		}
+
+	}
+
+	private void SetArcSize(float size) {
+
+		foreach (GameObject a in arcs) {
+			if (a != null)
+				a.GetComponent<LoopArc> ().SetArc (0, size, true);
+		
+		}
+		currentArcSize = size;
+
+	}
+
 }

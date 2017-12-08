@@ -16,9 +16,11 @@ public class LoopArc : MonoBehaviour {
 		RefreshArc ();
 	}
 
-	public void SetArc(float s, float e) {
+	public void SetArc(float s, float e, bool refresh = false) {
 		start = s;
 		end = e;
+		if (refresh)
+			RefreshArc ();
 	}
 
 	private void RefreshArc() {
