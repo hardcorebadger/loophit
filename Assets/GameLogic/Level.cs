@@ -199,11 +199,17 @@ public class Level : MonoBehaviour {
 	private IEnumerator Shrink() {
 
 		if (currentArcSize > 10) {
-			float target = currentArcSize - 20;
-			if (target < 10)
-				target = 10;
-			
+			float target = currentArcSize - (.5f * arcSize);
+			if (target < 10) {
+				target = 1;
+			}
 			while (currentArcSize > target) {
+				if (currentArcSize <= 10) {
+					GameController.EndGame ();
+					Destroy (this.gameObject);
+					target = currentArcSize;
+					break;
+				}
 				SetArcSize (currentArcSize - Time.deltaTime * shrinkSpeed);
 				if (currentArcSize < target) {
 					SetArcSize (target);
@@ -211,7 +217,7 @@ public class Level : MonoBehaviour {
 					yield return null;
 				}
 			}
-
+			
 		} else {
 			GameController.EndGame ();
 			yield return null;
@@ -224,7 +230,7 @@ public class Level : MonoBehaviour {
 		foreach (GameObject a in arcs) {
 			if (a != null)
 				a.GetComponent<LoopArc> ().SetArc (0, size, true);
-		
+			
 		}
 		currentArcSize = size;
 
